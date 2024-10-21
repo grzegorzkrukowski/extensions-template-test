@@ -1,6 +1,22 @@
 name: Build & Publish Extensions
 
 on:
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: 'Extensions to update (comma-separated relative paths for extensions) or ("extensions/**"" to execute on all possible subdirectories)'
+        required: true
+      command:
+        description: "Ray CLI command to run (build | publish)"
+        default: "build"
+        required: true
+        type: choice
+        options:
+          - build
+          - publish
+      cli_version:
+        description: 'CLI Version (optional, eg. "1.0.0")'
+        required: false
   pull_request:
     paths:
       - "extensions/**"
@@ -19,3 +35,6 @@ jobs:
         uses: raycast/github-actions/ray@master
         with:
           access_token: "${{ secrets.RAYCAST_ORGANIZATION_TOKEN }}"
+          command: "${{ github.event.inputs.command }}"
+          paths: "${{ github.event.inputs.paths }}"
+          cli_version: "${{ github.event.inputs.cli_version }}"
